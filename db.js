@@ -72,7 +72,7 @@ var prescriptionSchema = new Schema({
   order: { type: ObjectId, ref: "Order" }, // referenced by order
 
   type: String, // png, gif, etc
-  data: Schema.Types.Buffer
+  data: Buffer
 });
 
 // SideEffect
