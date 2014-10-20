@@ -1,10 +1,14 @@
 var mongoose = require('mongoose');
 
-var auth = require('./auth');
+var auth = require('./auth'); // get auth credentials
 
 /** Connect to Mongo DataBase */
 var mongo_opts = { keepalive: 1 };
 var db = mongoose.createConnection(auth.mongo.url, mongo_opts);
+
+// get objects for routing
+var express = require('express');
+var router = express.Router();
 
 db.on('error', console.log.bind(console, 'db connection error:'));
 db.once('open', function db_open() {
@@ -36,7 +40,7 @@ var userSchema = new Schema({
   side_effects: [ { type: ObjectId, ref: 'SideEffect'} ]
 });
 
-// Pharmacy
+// Store (Pharmacy)
 var storeSchema = new Schema({
   _id: { type: ObjectId, auto: true },
 
@@ -89,3 +93,25 @@ var sideEffectSchema = new Schema({
 });
 
 
+/** Create Models out of Schemas
+  */
+var models = {
+  User: db.model('User', userSchema),
+  Store: db.model('Store', storeSchema),
+  Order: db.model('Order', orderSchema),
+  Prescription: db.model('Prescription', prescriptionSchema),
+  SideEffect: db.model('SideEffect', sideEffectSchema)
+}
+
+/** REST API (using router)
+  */
+// TODO
+
+
+/* Expose outside */
+module.exports = {
+  type: 'Mongo',
+  router: router,
+  models: models,
+  connection: db
+};
