@@ -75,8 +75,9 @@ var prescriptionSchema = new Schema({
 
   order: { type: ObjectId, ref: "Order" }, // referenced by order
 
-  type: String, // png, gif, etc
-  data: Buffer
+  //type: String, // png, gif, etc
+  //data: Buffer
+  image: { type: ObjectId, ref: "Image" }
 });
 
 // SideEffect
@@ -92,6 +93,15 @@ var sideEffectSchema = new Schema({
   notes: [String]
 });
 
+// Image
+var imageShema = new Schema({
+  _id: { type: ObjectId, auto: true },
+
+  name: String,
+  type: String,
+  data: Buffer
+});
+
 
 /** Create Models out of Schemas
   */
@@ -100,13 +110,36 @@ var models = {
   Store: db.model('Store', storeSchema),
   Order: db.model('Order', orderSchema),
   Prescription: db.model('Prescription', prescriptionSchema),
-  SideEffect: db.model('SideEffect', sideEffectSchema)
+  SideEffect: db.model('SideEffect', sideEffectSchema),
+  "Image":  db.model('Image', imageShema)
 }
 
 /** REST API (using router)
   */
 // TODO
 
+
+/** Test
+  */
+var user = new models.User({
+  name: {
+    first: "Fred",
+    last: "Belly"
+  },
+  phone: "0401234567",
+  email: "talmo.christian@gmail.com",
+
+  allergies: ["bee strings", "sea food", "deadly bears"],
+  medical_conditions: ["none"]
+});
+
+user.save(function (err, user) {
+  if (err) {
+    return console.log("User saving error: " + err);
+  }
+
+  console.log("user saved: " + user);
+});
 
 /* Expose outside */
 module.exports = {
