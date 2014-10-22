@@ -50,11 +50,12 @@ var storeSchema = new Schema({
   email: String,
   fax: String,
 
+  logo: { type: ObjectId, ref: 'Image' },
+
   location: {
     lon: String,
     lat: String
   }
-
 });
 
 // Order
@@ -64,20 +65,9 @@ var orderSchema = new Schema({
   from: { type: ObjectId, ref: "User" },
   to: { type: ObjectId, ref: "Store" },
 
-  prescription: [{ type: ObjectId, ref: 'Prescription' }],
+  prescription: [{ type: ObjectId, ref: 'Image' }],
 
   date: { type: Date, default: Date.now }
-});
-
-// Prescription
-var prescriptionSchema = new Schema({
-  _id: { type: ObjectId, auto: true },
-
-  order: { type: ObjectId, ref: "Order" }, // referenced by order
-
-  //type: String, // png, gif, etc
-  //data: Buffer
-  image: { type: ObjectId, ref: "Image" }
 });
 
 // SideEffect
@@ -109,18 +99,152 @@ var models = {
   User: db.model('User', userSchema),
   Store: db.model('Store', storeSchema),
   Order: db.model('Order', orderSchema),
-  Prescription: db.model('Prescription', prescriptionSchema),
   SideEffect: db.model('SideEffect', sideEffectSchema),
   "Image":  db.model('Image', imageShema)
 }
 
 /** REST API (using router)
+  * Configure Routes
   */
-// TODO
+
+function dblog(str) {
+  console.log(str);
+}
+
+/* GET All Stores */
+router.get('stores', function (req, res) {
+  dblog('api: /stores');
+
+  // get all stores
+  models.Store.find({}, function (err, stores) {
+    if (err) {
+      dblog('api db err: ' + stores);
+      return res.status(500).end();
+    }
+
+    dblog('api fetched: ');
+    dblog(stores);
+
+    res.json(stores);
+  });
+});
+
+/* GET Store */
+router.get('stores/:store', function (req, res) {
+  var params = req.params;
+
+  dblog('api: /stores');
+
+  // get all stores
+  models.Store.find({}, function (err, stores) {
+    if (err) {
+      dblog('api db err [finding stores]: ' + stores);
+      return res.status(500).end();
+    }
+
+    dblog('api fetched: ');
+    dblog(stores);
+
+    res.json(stores);
+  });
+});
+
+/* POST Insert a Store */
+router.post('stores/', function (req, res) {
+  var json = req.body;
+  dblog('api new store: ' + json);
+
+  // name, address, phone, email, fax, location, logo
+
+  // make sure some essential information of the store is present
+  if (!json || !json.name || !json.address || !json.email) {
+    dblog('api err [stores/]: bad request (lacking store info)');
+    return res.status(400).json({message: "Required Store fields not set."}).end();
+  }
+
+  // check that the store doesn't already exist
+  models.Store.findOne(json, function (err, store) {
+    if (err) {
+      dblog('api db err [finding store]: ' + json);
+      return res.status(500).end();
+    }
+
+    if (store) {
+      // store already exists
+      res.status(400);
+      res.json({
+        message: 'That store already exists. You should update the existing store.'
+      });
+      return res.end();
+    } else {
+      // store doesn't exist
+      var store = new models.Store(json);
+
+      store.save(function (err, store) {
+        if (err) {
+          dblog("api db err [stores/]: failed to save store");
+          return res.status(500).end();
+        }
+
+        // store saved successfully
+        return res.status(200).json(store).end();
+      });
+    }
+  });
+});
+
+/* PUT update a store */
+router.put('stores/', function (req, res) {
+  var json = req.body;
+
+  // make sure the store already exists
+  models.Store.findOne(json, function (err, store) {
+    if (err) {
+      dblog('api db err [finding store]' + json);
+      return res.status(500).end();
+    }
+
+    // name, address, phone, email, fax, location, logo
+    if (store) {
+      // store was found, make sure to update only valid fields
+      store.name = json.name || store.name;
+      store.address = json.address || json.address;
+      store.phone = json.phone || json.phone;
+      store.email = json.email || json.email;
+      store.fax = json.fax || json.fax;
+      store.location = json.location || json.location;
+      store.logo = json.logo || json.logo;
+
+      // save the updated store information
+      store.save(function (err, store) {
+        if (err) {
+          dblog("api db err [stores/]: failed to update store");
+          return res.status(500).end();
+        }
+
+        // store saved successfully
+        return res.status(200).json(store).end();
+      });
+    } else {
+      // no store to update
+      dblog('api db err [no store to update]');
+      return res.status(400).json({message: "No store found to update"}).end();
+    }
+  });
+});
+
+/* Expose outside */
+module.exports = {
+  type: 'Mongo',
+  router: router,
+  models: models,
+  connection: db
+};
 
 
 /** Test
   */
+/*
 var user = new models.User({
   name: {
     first: "Fred",
@@ -140,11 +264,4 @@ user.save(function (err, user) {
 
   console.log("user saved: " + user);
 });
-
-/* Expose outside */
-module.exports = {
-  type: 'Mongo',
-  router: router,
-  models: models,
-  connection: db
-};
+*/
