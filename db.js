@@ -112,7 +112,7 @@ function dblog(str) {
 }
 
 /* GET All Stores */
-router.get('stores', function (req, res) {
+router.get('/stores', function (req, res) {
   dblog('api: /stores');
 
   // get all stores
@@ -149,10 +149,10 @@ router.get('stores/:store', function (req, res) {
   });
 });
 
-/* POST Insert a Store */
-router.post('stores/', function (req, res) {
+/* POST Insert a Store or partial update */
+router.post('/stores', function (req, res) {
   var json = req.body;
-  dblog('api new store: ' + json);
+  dblog('api POST store: ' + json);
 
   // name, address, phone, email, fax, location, logo
 
@@ -162,40 +162,47 @@ router.post('stores/', function (req, res) {
     return res.status(400).json({message: "Required Store fields not set."}).end();
   }
 
-  // check that the store doesn't already exist
-  models.Store.findOne(json, function (err, store) {
+  // update existing store if it exists
+  models.Store.findOne({ name: json.name }, function (err, store) {
     if (err) {
       dblog('api db err [finding store]: ' + json);
       return res.status(500).end();
     }
 
-    if (store) {
-      // store already exists
-      res.status(400);
-      res.json({
-        message: 'That store already exists. You should update the existing store.'
-      });
-      return res.end();
+    var msg = "api db: new store created and saved!";
+
+    if (!store) {
+      // create store if it doesn't exist
+      store = new models.Store(json);
+      res.status(201);
     } else {
-      // store doesn't exist
-      var store = new models.Store(json);
-
-      store.save(function (err, store) {
-        if (err) {
-          dblog("api db err [stores/]: failed to save store");
-          return res.status(500).end();
-        }
-
-        // store saved successfully
-        return res.status(200).json(store).end();
-      });
+      msg = "api db: store updated and saved!";
+      res.status(200);
     }
+
+    store.save(function (err, store) {
+      if (err) {
+        dblog("api db err [stores/]: failed to save store");
+        return res.status(500).end();
+      }
+
+      // store saved successfully
+      dblog(msg);
+      return res.json(store).end();
+    });
   });
 });
 
-/* PUT update a store */
-router.put('stores/', function (req, res) {
+/* PUT full update of store */
+router.put('/stores', function (req, res) {
   var json = req.body;
+
+  // make sure that all required fields are present
+  if (!json.name || !json.address || !json.phone ||
+      !json.email || !json.location || !json.fax || !json.logo) {
+    dblog('api db err [PUT store]: required fields missing')
+    return res.status(301).end();
+  }
 
   // make sure the store already exists
   models.Store.findOne(json, function (err, store) {
@@ -223,6 +230,7 @@ router.put('stores/', function (req, res) {
         }
 
         // store saved successfully
+        dblog('"api db: store updated!');
         return res.status(200).json(store).end();
       });
     } else {
@@ -232,6 +240,53 @@ router.put('stores/', function (req, res) {
     }
   });
 });
+
+
+/* Create an Order */
+/*
+  from: { type: ObjectId, ref: "User" },
+  to: { type: ObjectId, ref: "Store" },
+
+  prescription: [{ type: ObjectId, ref: 'Image' }],
+
+  date: { type: Date, default: Date.now }
+*/
+
+router.post('/order', function (req, res) {
+  var json = req.body;
+
+  var from = json.from;
+  var to = json.to;
+  var prescription = json.prescription;
+  var date = Date.now();
+
+  // check necessary information on the order.
+  var order = new models.Order(json);
+
+  order.save(function (err, order) {
+    if (err) {
+      dblog('api order POST save error: ' + err);
+      return res.status(500).end();
+    }
+
+    dblog('order saved.');
+    res.status(200).json(order).end();
+  });
+});
+
+router.get('/order', function (req, res) {
+
+  // find all
+  models.Order.find({}, function (err, orders) {
+    if (err) {
+      dblog('/order GET err: ' + err);
+      return res.status(404).end();
+    }
+
+    return res.json(orders).end();
+  });
+})
+
 
 /* Expose outside */
 module.exports = {

@@ -1,0 +1,97 @@
+<html ng-app="storeApp">
+  <head>
+    <meta charset="utf-8">
+    <title>Refill Plus Dashboard</title>
+
+    <style type="text/css">
+    </style>
+
+    <!-- Purecss.io -->
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href="img/favicon.png">
+
+    <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.js"></script>
+  </head>
+
+  <body>
+
+    <img src="img/logo.png">
+
+    <script type="text/javascript">
+      var app = angular.module('storeApp', []);
+
+      app.controller('StoreCtrl', ['$scope', '$http', '$q', function(scope, http, q) {
+
+        scope.postOrder = function() {
+          console.log("posting...");
+
+          var data = {
+            name: 'Test Data',
+            address: '3000 Some Street 9B',
+            phone: '040 123456789',
+            email: 'store@mail.com',
+            fax: 'fax:102391203213'
+
+          }
+
+          http.post('http://localhost:3000/api/stores', data);
+        };
+
+      }]);
+    </script>
+
+    <div ng-controller="StoreCtrl">
+      <form class="pure-form pure-form-aligned" ng-submit="postOrder()">
+        <fieldset>
+          <legend>Add Store</legend>
+
+          <div class="pure-control-group">
+            <label for="name">Store Name</label>
+            <input id="name" ng-model="name" type="text" placeholder="Name">
+          </div>
+
+          <div class="pure-control-group">
+            <label for="address">Address</label>
+            <input id="address" ng-model="Address" type="text" placeholder="Address">
+          </div>
+
+          <div class="pure-control-group">
+            <label for="phone">Phone</label>
+            <input id="phone" ng-model="phone" type="text" placeholder="Phone">
+          </div>
+
+          <div class="pure-control-group">
+            <label for="email">Email</label>
+            <input id="email" ng-model="email" type="email" placeholder="Email">
+          </div>
+
+
+          <div class="pure-control-group">
+            <label for="fax">Fax</label>
+            <input id="fax" ng-model="fax" type="text" placeholder="Fax">
+          </div>
+
+          <div class="pure-control-group">
+            <label for="logo_selector">Logo</label>
+            <input id="logo_selector" ng-model="logo" type="file" accept="image/*">
+          </div>
+
+          <div class="pure-control-group">
+            <label>Location</label>
+            <input ng-model="longitude" type="text" placeholder="longitude">
+            <input ng-model="latitude" type="text" placeholder="latitude">
+          </div>
+
+          <br>
+            <button type="submit" class="pure-button pure-button-primary">Submit</button>
+
+        </fieldset>
+      </form>
+    </div>
+
+
+  </body>
+</html>
