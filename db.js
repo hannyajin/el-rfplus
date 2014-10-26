@@ -20,25 +20,6 @@ db.once('open', function db_open() {
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
-// User
-var userSchema = new Schema({
-  _id: { type: ObjectId, auto: true },
-
-  name: {
-    first: String,
-    last: String
-  },
-
-  phone: String,
-  email: String,
-
-  allergies: [String],
-  medical_conditions: [String],
-
-  order_history: [ { type: ObjectId, ref: 'Order' } ],
-
-  side_effects: [ { type: ObjectId, ref: 'SideEffect'} ]
-});
 
 // Store (Pharmacy)
 var storeSchema = new Schema({
@@ -70,37 +51,15 @@ var orderSchema = new Schema({
   date: { type: Date, default: Date.now }
 });
 
-// SideEffect
-var sideEffectSchema = new Schema({
-  _id: { type: ObjectId, auto: true },
-
-  user: { type: ObjectId, ref: 'User' },
-
-  date: { type: Date, default: Date.now },
-  medications_taken: [String],
-  side_effects: [String],
-  severity: String, // low, med, hi
-  notes: [String]
-});
-
-// Image
-var imageShema = new Schema({
-  _id: { type: ObjectId, auto: true },
-
-  name: String,
-  type: String,
-  data: Buffer
-});
-
 
 /** Create Models out of Schemas
   */
 var models = {
-  User: db.model('User', userSchema),
   Store: db.model('Store', storeSchema),
-  Order: db.model('Order', orderSchema),
-  SideEffect: db.model('SideEffect', sideEffectSchema),
-  "Image":  db.model('Image', imageShema)
+  Order: db.model('Order', orderSchema)
+  //User: db.model('User', userSchema),
+  //SideEffect: db.model('SideEffect', sideEffectSchema),
+  //"Image":  db.model('Image', imageShema)
 }
 
 /** REST API (using router)
@@ -297,6 +256,8 @@ module.exports = {
 };
 
 
+
+
 /** Test
   */
 /*
@@ -320,3 +281,46 @@ user.save(function (err, user) {
   console.log("user saved: " + user);
 });
 */
+
+/*
+// User
+var userSchema = new Schema({
+  _id: { type: ObjectId, auto: true },
+
+  name: {
+    first: String,
+    last: String
+  },
+
+  phone: String,
+  email: String,
+
+  allergies: [String],
+  medical_conditions: [String],
+
+  order_history: [ { type: ObjectId, ref: 'Order' } ],
+
+  side_effects: [ { type: ObjectId, ref: 'SideEffect'} ]
+});
+
+// SideEffect
+var sideEffectSchema = new Schema({
+  _id: { type: ObjectId, auto: true },
+
+  user: { type: ObjectId, ref: 'User' },
+
+  date: { type: Date, default: Date.now },
+  medications_taken: [String],
+  side_effects: [String],
+  severity: String, // low, med, hi
+  notes: [String]
+});
+
+// Image
+var imageShema = new Schema({
+  _id: { type: ObjectId, auto: true },
+
+  name: String,
+  type: String,
+  data: Buffer
+});
