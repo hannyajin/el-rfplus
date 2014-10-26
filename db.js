@@ -43,10 +43,30 @@ var storeSchema = new Schema({
 var orderSchema = new Schema({
   _id: { type: ObjectId, auto: true },
 
-  from: { type: ObjectId, ref: "User" },
+  // User
+  from: {
+    name {
+      first: String,
+      last: String
+    },
+    phone: String,
+    email: String,
+
+    allergies: [String],
+    medicalConditions: [String],
+
+    sideEffects: [String]
+  },
+
+  // Store (Pharmacy)
   to: { type: ObjectId, ref: "Store" },
 
-  prescription: [{ type: ObjectId, ref: 'Image' }],
+  // Image data
+  prescription: {
+    name: String,
+    type: String,
+    data: Buffer
+  },
 
   date: { type: Date, default: Date.now }
 });
