@@ -31,7 +31,9 @@ var storeSchema = new Schema({
   email: String,
   fax: String,
 
-  logo: { type: ObjectId, ref: 'Image' },
+  logo: {
+    data: String
+  },
 
   location: {
     lon: String,
@@ -45,7 +47,7 @@ var orderSchema = new Schema({
 
   // User
   from: {
-    name {
+    name: {
       first: String,
       last: String
     },
@@ -65,7 +67,7 @@ var orderSchema = new Schema({
   prescription: {
     name: String,
     type: String,
-    data: Buffer
+    data: String
   },
 
   date: { type: Date, default: Date.now }
@@ -131,7 +133,7 @@ router.get('stores/:store', function (req, res) {
 /* POST Insert a Store or partial update */
 router.post('/stores', function (req, res) {
   var json = req.body;
-  dblog('api POST store: ' + json);
+  //dblog('api POST store: ' + JSON.stringify(json));
 
   // name, address, phone, email, fax, location, logo
 
@@ -148,13 +150,22 @@ router.post('/stores', function (req, res) {
       return res.status(500).end();
     }
 
-    var msg = "api db: new store created and saved!";
+    var msg = "";
 
     if (!store) {
       // create store if it doesn't exist
       store = new models.Store(json);
       res.status(201);
+
+      msg = "api db: new store created and saved!";
     } else {
+      // update store fields
+      for (var key in json) {
+        if (json.hasOwnProperty(key)) {
+          store[key] = json[key];
+        }
+      }
+
       msg = "api db: store updated and saved!";
       res.status(200);
     }
@@ -167,6 +178,9 @@ router.post('/stores', function (req, res) {
 
       // store saved successfully
       dblog(msg);
+
+      //dblog( JSON.stringify(store));
+
       return res.json(store).end();
     });
   });
@@ -276,71 +290,3 @@ module.exports = {
 };
 
 
-
-
-/** Test
-  */
-/*
-var user = new models.User({
-  name: {
-    first: "Fred",
-    last: "Belly"
-  },
-  phone: "0401234567",
-  email: "talmo.christian@gmail.com",
-
-  allergies: ["bee strings", "sea food", "deadly bears"],
-  medical_conditions: ["none"]
-});
-
-user.save(function (err, user) {
-  if (err) {
-    return console.log("User saving error: " + err);
-  }
-
-  console.log("user saved: " + user);
-});
-*/
-
-/*
-// User
-var userSchema = new Schema({
-  _id: { type: ObjectId, auto: true },
-
-  name: {
-    first: String,
-    last: String
-  },
-
-  phone: String,
-  email: String,
-
-  allergies: [String],
-  medical_conditions: [String],
-
-  order_history: [ { type: ObjectId, ref: 'Order' } ],
-
-  side_effects: [ { type: ObjectId, ref: 'SideEffect'} ]
-});
-
-// SideEffect
-var sideEffectSchema = new Schema({
-  _id: { type: ObjectId, auto: true },
-
-  user: { type: ObjectId, ref: 'User' },
-
-  date: { type: Date, default: Date.now },
-  medications_taken: [String],
-  side_effects: [String],
-  severity: String, // low, med, hi
-  notes: [String]
-});
-
-// Image
-var imageShema = new Schema({
-  _id: { type: ObjectId, auto: true },
-
-  name: String,
-  type: String,
-  data: Buffer
-});
