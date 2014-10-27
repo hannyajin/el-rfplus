@@ -133,7 +133,6 @@ router.get('stores/:store', function (req, res) {
 /* POST Insert a Store or partial update */
 router.post('/stores', function (req, res) {
   var json = req.body;
-  //dblog('api POST store: ' + JSON.stringify(json));
 
   // name, address, phone, email, fax, location, logo
 
@@ -178,8 +177,6 @@ router.post('/stores', function (req, res) {
 
       // store saved successfully
       dblog(msg);
-
-      //dblog( JSON.stringify(store));
 
       return res.json(store).end();
     });

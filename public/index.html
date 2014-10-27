@@ -14,6 +14,9 @@
 
     <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.js"></script>
+    <script src="js/vendor/angular-file-upload.js"></script>
+
+    <script type="text/javascript" src="js/controllers.js"></script>
   </head>
 
   <body>
@@ -21,66 +24,11 @@
     <img src="img/logo.png">
 
     <script type="text/javascript">
-      var app = angular.module('storeApp', []);
-
-      app.controller('StoreCtrl', ['$scope', '$http', '$q', function(scope, http, q) {
-
-        scope.postOrder = function() {
-          console.log("posting...");
-
-          http.get(scope.logo_url).
-            success(function (imgdata, status, headers, config) {
-
-              console.log("imgdata: " + imgdata);
-
-              with (scope) {
-                var data = {
-                  name: name,
-                  address: address,
-                  phone: phone,
-                  email: email,
-                  fax: fax,
-
-                  logo: {
-                    data: imgdata
-                  },
-
-                  location: {
-                    lon: longitude,
-                    lat: latitude
-                  }
-                }
-
-                name = "";
-                address = "";
-                phone = "";
-                email = "";
-                fax = "";
-                logo_url = "";
-                longitude = "";
-                latitude = "";
-              }
-
-              http.post('http://localhost:3000/api/stores', data).
-                success(function() {
-                  console.log("Success!");
-                }).
-                error(function() {
-                  console.log("Error!");
-                });
-              
-            }). // success
-            error(function (data, status, headers, config) {
-              console.log("Error in creating store.");
-            }); // error
-
-        };
-
-      }]);
+      
     </script>
 
-    <div ng-controller="StoreCtrl">
-      <form class="pure-form pure-form-aligned" ng-submit="postOrder()">
+    <div ng-controller="AddStoreCtrl">
+      <form class="pure-form pure-form-aligned" ng-submit="addStore()">
         <fieldset>
           <legend>Add Store</legend>
 
