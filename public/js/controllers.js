@@ -19,8 +19,8 @@ app.controller('AddStoreCtrl', ['$scope', '$http', 'storesFactory',
         },
 
         location: {
-          lat: latitude
-          lon: longitude,
+          lat: latitude,
+          lon: longitude
         }
       }
 
