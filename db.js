@@ -103,8 +103,8 @@ router.get('/stores', function (req, res) {
       return res.status(500).end();
     }
 
-    dblog('api fetched: ');
-    dblog(stores);
+    dblog('api fetched: ' + stores.length + " stores");
+    //dblog(stores);
 
     res.json(stores);
   });

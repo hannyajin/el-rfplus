@@ -5,54 +5,48 @@ app.controller('AddStoreCtrl', ['$scope', '$http', '$q', function(scope, http, q
   scope.addStore = function() {
     console.log("adding store...");
 
-    http.get(scope.logo_url).
-      success(function (imgdata, status, headers, config) {
+    with (scope) {
+      var data = {
+        name: name,
+        address: address,
+        phone: phone,
+        email: email,
+        fax: fax,
 
-        console.log("imgdata: " + imgdata);
+        logo: {
+          data: image_data
+        },
 
-        with (scope) {
-          var data = {
-            name: name,
-            address: address,
-            phone: phone,
-            email: email,
-            fax: fax,
-
-            logo: {
-              data: imgdata
-            },
-
-            location: {
-              lon: longitude,
-              lat: latitude
-            }
-          }
-
-          // reset form fields
-          name = "";
-          address = "";
-          phone = "";
-          email = "";
-          fax = "";
-          logo_url = "";
-          longitude = "";
-          latitude = "";
+        location: {
+          lon: longitude,
+          lat: latitude
         }
+      }
 
-        //http.post('http://localhost:3000/api/stores', data).
-        http.post('/api/stores', data).
-          success(function() {
-            console.log("Success!");
-          }).
-          error(function() {
-            console.log("Error!");
-          });
-        
-      }). // success
-      error(function (data, status, headers, config) {
-        console.log("Error in creating store.");
-      }); // error
-  };
+      // reset form fields
+      name = "";
+      address = "";
+      phone = "";
+      email = "";
+      fax = "";
+      logo_url = "";
+      longitude = "";
+      latitude = "";
+    }
+
+    //http.post('http://localhost:3000/api/stores', data).
+    http.post('/api/stores', data).
+      success(function(data, status, headers, config) {
+        console.log("Success!");
+
+        // TODO
+        // add store section to list
+      }).
+      error(function(data, status, headers, config) {
+        console.log("Error!");
+      });
+
+  }; // addStore
 
   var nodragUploader = $('#upload_fallback')[0];
 
@@ -85,15 +79,30 @@ app.controller('AddStoreCtrl', ['$scope', '$http', '$q', function(scope, http, q
   }
 
   // logo file selector
-  nodragUploader.querySelector('input').onchange = function () {
+  $('#upload_selector').onchange = function () {
     readFiles(this.files);
   }
   // logo url selector
+  var _keyup_timer = null;
+  var _keyup_delay = 300;
   $('#logo_url_sel')[0].onkeyup = function () {
-    //var p = $('#logo_preview')[0];
-    //p.src = scope.logo_url;
+    if (scope) {
+      if (_keyup_timer) {
+        window.clearTimeout(_keyup_timer);
+      }
+      var url = scope.logo_url + '';
+      _keyup_timer = setTimeout(function() {
+        previewFile(url)
+      }, _keyup_delay);
+    } else {
+      console.log("error no scope");
+    }
+  }
 
-    previewFile(scope.logo_url);
+  $('#logo_url_sel')[0].ondrop = function(e) {
+    setTimeout(function() {
+      previewFile(scope.logo_url + '');
+    }, 200);
   }
 
   // read files
@@ -107,20 +116,45 @@ app.controller('AddStoreCtrl', ['$scope', '$http', '$q', function(scope, http, q
 
   }
 
-  function previewFile (file) {
-    var p = $('#logo_preview')[0];
+  scope.image_data = null;
 
-    if (file.indexOf('http://') === 0) {
-      // treat as an URL
-      p.src = scope.logo_url;
+  function previewFile (file) {
+    console.log("preview file: ");
+    console.log(file);
+
+    if (!file) {
+      console.log("no file selected");
       return;
     }
 
-    var reader = new FileReader();
-    reader.onload = function (e) {
-      p.src = e.target.result;
+    var p = $('#logo_preview')[0];
+
+    if (typeof file === 'string' && file.indexOf('http://') === 0) {
+      // treat as an URL
+      p.src = file;
+
+      // get image data from url
+      http.get(file).
+        success(function (imgdata, status, headers, config) {
+          scope.image_data = imgdata;
+        }).
+        error(function () {
+          console.log("Error reading img data from url");
+        });
+
+    } else {
+
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        p.src = e.target.result;
+        scope.image_data = e.target.result;
+
+      }
+      reader.readAsDataURL(file);
     }
-    reader.readAsDataURL(file);
+
+    // reset fields
+    scope.logo_url = "";
   }
 
 }]); // AddStoreCtrl
