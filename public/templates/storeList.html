@@ -1,0 +1,24 @@
+<div ng-controller="StoreListCtrl">
+  <h2>Stores</h2>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Address</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Fax</th>
+      <th>Logo</th>
+      <th>Location</th>
+    </tr>
+    <tr ng-repeat="store in stores" ng-class="{lightGreen: $index%2==0}">
+      <td>{{ store.name }}</td>
+      <td>{{ store.address }}</td>
+      <td>{{ store.phone }}</td>
+      <td>{{ store.email }}</td>
+      <td>{{ store.fax }}</td>
+      <td><img src="{{ store.logo.data }}"></td>
+
+      <td>{{ store.location.lon }} , {{ store.location.lat }}</td>
+    </tr>
+  </table>
+</div>

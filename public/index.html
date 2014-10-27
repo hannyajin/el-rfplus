@@ -1,10 +1,7 @@
-<html ng-app="rfpApp">
+<html>
   <head>
     <meta charset="utf-8">
     <title>Refill Plus Dashboard</title>
-
-    <style type="text/css">
-    </style>
 
     <link rel="stylesheet" type="text/css" href="css/style.css">
 
@@ -14,131 +11,23 @@
     <!-- favicon -->
     <link rel="icon" type="image/png" href="img/favicon.png">
 
-    <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+    <script src="//code.angularjs.org/1.2.26/angular-route.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.11/angular-ui-router.js"></script>
 
-    <script type="text/javascript" src="js/controllers.js"></script>
+    <!-- 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.js"></script>
+    -->
+
+    <script src="js/app.js"></script>
+    <script src="js/controllers/homeCtrl.js"></script>
+    <script src="js/controllers/aboutCtrl.js"></script>
+    <script src="js/controllers/navCtrl.js"></script>
   </head>
 
-  <body>
-
-    <!-- temporary app logo -->
-    <img src="img/logo.png">
-
-
-    <div class="pure-g">
-
-      <div class="pure-u-2-5">
-
-        <div ng-controller="AddStoreCtrl">
-          <form class="pure-form pure-form-aligned" ng-submit="addStore()">
-            <fieldset>
-              <legend>Add Store</legend>
-
-              <div class="pure-control-group">
-                <label for="name">Store Name</label>
-                <input id="name" ng-model="name" type="text" placeholder="Name">
-              </div>
-
-              <div class="pure-control-group">
-                <label for="address">Address</label>
-                <input id="address" ng-model="address" type="text" placeholder="Address">
-              </div>
-
-              <div class="pure-control-group">
-                <label for="phone">Phone</label>
-                <input id="phone" ng-model="phone" type="text" placeholder="Phone">
-              </div>
-
-              <div class="pure-control-group">
-                <label for="email">Email</label>
-                <input id="email" ng-model="email" type="email" placeholder="Email">
-              </div>
-
-              <div class="pure-control-group">
-                <label for="fax">Fax</label>
-                <input id="fax" ng-model="fax" type="text" placeholder="Fax">
-              </div>
-
-              <div class="pure-control-group">
-
-                <div id="logo_div">
-
-                  <label for="logo_drag_uploader">Drag to upload</label>
-                  <div id="logo_drag_uploader">
-                    <img id="logo_preview" src="">
-                  </div>
-
-                  <p id="upload_fallback">
-                    <label for="upload_fallback">Select logo from file</label>
-                    <input id="upload_selector" type="file">
-                  </p>
-
-                  <div hidden>
-                    <label for="logo_url_sel">Select logo from URL</label>
-                    <input id="logo_url_sel" ng-model="logo_url" type="text" placeholder="logo url">
-                    <!--<input id="logo_selector" ng-model="logo" type="file" accept="image/*">-->
-                  </div>
-
-                </div>
-
-              </div>
-
-              <div class="pure-control-group">
-                <label>Location</label>
-                <input ng-model="latitude" type="text" placeholder="latitude">
-                <input ng-model="longitude" type="text" placeholder="longitude">
-              </div>
-
-              <br>
-                <button type="submit" class="pure-button pure-button-primary">Submit</button>
-
-            </fieldset>
-          </form> <!-- /Form -->
-        </div> <!-- ng-onctroller AppStoreCtrl -->
-      </div> <!-- pure-u-1-2 -->
-
-
-      <div class="pure-u-3-5">
-
-        <div ng-controller="StoreListCtrl">
-          <h2>Stores</h2>
-
-          <table>
-            <tr>
-              <th>Name</th>
-              <th>Address</th>
-              <th>Phone</th>
-              <th>Email</th>
-              <th>Fax</th>
-              <th>Logo</th>
-              <th>Location</th>
-            </tr>
-            <tr ng-repeat="store in stores" ng-class="{lightGreen: $index%2==0}">
-              <td>{{ store.name }}</td>
-              <td>{{ store.address }}</td>
-              <td>{{ store.phone }}</td>
-              <td>{{ store.email }}</td>
-              <td>{{ store.fax }}</td>
-              <td><img src="{{ store.logo.data }}"></td>
-
-              <td>{{ store.location.lon }} , {{ store.location.lat }}</td>
-            </tr>
-          </table>
-
-        </div>
-
-      </div> <!-- pure-u-1-2 -->
-
-
-
-
-    </div> <!-- pure-g -->
-
-
-
-    <script type="text/javascript">
-    </script>
-
+  <body ng-app="rfpApp">
+      <nav ng-include="'templates/nav.html'"></nav>
+      <div ui-view></div>
+      <footer ng-include="'templates/footer.html'"></footer>
   </body>
 </html>

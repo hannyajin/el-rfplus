@@ -1,0 +1,12 @@
+<div ng-controller='navCtrl' class="pure-menu pure-menu-open pure-menu-horizontal">
+  <ul>
+    <li ng-repeat="tab in tabs">
+      <a id="{{ tab | lowercase }}-link" ui-sref="{{ tab | lowercase }}">{{ tab }}</a>
+    </li>
+    <!--
+    <li class="pure-menu-selected"><a href="#/home">Home</a></li>
+    <li><a href="#/about">About</a></li>
+    <li><a href="#/docs">Docs</a></li>
+    -->
+  </ul>
+</div>
