@@ -1,4 +1,4 @@
-<html ng-app="storeApp">
+<html ng-app="rfpApp">
   <head>
     <meta charset="utf-8">
     <title>Refill Plus Dashboard</title>
@@ -28,7 +28,7 @@
 
     <div class="pure-g">
 
-      <div class="pure-u-1-2">
+      <div class="pure-u-2-5">
 
         <div ng-controller="AddStoreCtrl">
           <form class="pure-form pure-form-aligned" ng-submit="addStore()">
@@ -74,7 +74,7 @@
                     <input id="upload_selector" type="file">
                   </p>
 
-                  <div>
+                  <div hidden>
                     <label for="logo_url_sel">Select logo from URL</label>
                     <input id="logo_url_sel" ng-model="logo_url" type="text" placeholder="logo url">
                     <!--<input id="logo_selector" ng-model="logo" type="file" accept="image/*">-->
@@ -86,8 +86,8 @@
 
               <div class="pure-control-group">
                 <label>Location</label>
-                <input ng-model="longitude" type="text" placeholder="longitude">
                 <input ng-model="latitude" type="text" placeholder="latitude">
+                <input ng-model="longitude" type="text" placeholder="longitude">
               </div>
 
               <br>
@@ -99,10 +99,35 @@
       </div> <!-- pure-u-1-2 -->
 
 
-      <div class="pure-u-1-2">
+      <div class="pure-u-3-5">
 
-        
-        
+        <div ng-controller="StoreListCtrl">
+          <h2>Stores</h2>
+
+          <table>
+            <tr>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Fax</th>
+              <th>Logo</th>
+              <th>Location</th>
+            </tr>
+            <tr ng-repeat="store in stores" ng-class="{lightGreen: $index%2==0}">
+              <td>{{ store.name }}</td>
+              <td>{{ store.address }}</td>
+              <td>{{ store.phone }}</td>
+              <td>{{ store.email }}</td>
+              <td>{{ store.fax }}</td>
+              <td><img src="{{ store.logo.data }}"></td>
+
+              <td>{{ store.location.lon }} , {{ store.location.lat }}</td>
+            </tr>
+          </table>
+
+        </div>
+
       </div> <!-- pure-u-1-2 -->
 
 

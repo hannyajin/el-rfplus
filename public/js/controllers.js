@@ -1,6 +1,7 @@
-var app = angular.module('storeApp', []);
+var app = angular.module('rfpApp', []);
 
-app.controller('AddStoreCtrl', ['$scope', '$http', '$q', function(scope, http, q) {
+app.controller('AddStoreCtrl', ['$scope', '$http', 'storesFactory',
+                function(scope, http, storesFactory) {
 
   scope.addStore = function() {
     console.log("adding store...");
@@ -18,8 +19,8 @@ app.controller('AddStoreCtrl', ['$scope', '$http', '$q', function(scope, http, q
         },
 
         location: {
-          lon: longitude,
           lat: latitude
+          lon: longitude,
         }
       }
 
@@ -36,11 +37,12 @@ app.controller('AddStoreCtrl', ['$scope', '$http', '$q', function(scope, http, q
 
     //http.post('http://localhost:3000/api/stores', data).
     http.post('/api/stores', data).
-      success(function(data, status, headers, config) {
+      success(function(addedStore, status, headers, config) {
         console.log("Success!");
 
         // TODO
         // add store section to list
+        storesFactory.append(addedStore);
       }).
       error(function(data, status, headers, config) {
         console.log("Error!");
@@ -158,3 +160,48 @@ app.controller('AddStoreCtrl', ['$scope', '$http', '$q', function(scope, http, q
   }
 
 }]); // AddStoreCtrl
+
+
+app.controller('StoreListCtrl', ['$scope', '$http', 'storesFactory',
+                function(scope, http, storesFactory) {
+
+  storesFactory.list(function (stores) {
+    scope.stores = stores;
+  });
+
+  storesFactory.addListener(function (data) {
+    scope.stores.push(data);
+  })
+}]); // StoreListCtrl
+
+
+
+/** Factory
+  */
+
+app.factory('storesFactory', ['$http', function (http) {
+  var listeners = [];
+
+  var cache = {};
+
+  return {
+    addListener: function(callback) {
+      if (callback && typeof callback === "function") {
+        listeners.push(callback);
+      }
+    },
+
+    list: function (callback) {
+      http.get('/api/stores').success(callback)
+    },
+    append: function(data) {
+      for (var i = 0; i < listeners.length; i++) {
+        // call with new data
+        var cb = listeners[i];
+        if (cb) {
+          cb(data);
+        }
+      }
+    }
+  }
+}]);
