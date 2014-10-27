@@ -6,3 +6,21 @@ body {
 a {
   color: #00B7FF;
 }
+
+@thumb_width: 150px;
+
+#logo_drag_uploader {
+  border: 5px dashed #ccc;
+  width: @thumb_width;
+  min-height: @thumb_width;
+  display: inline-block;
+}
+
+#logo_drag_uploader.logo_hover {
+  display: inline-block;
+  border: 5px dashed #aaf;
+}
+
+#logo_preview {
+  display: inline-block;
+}
