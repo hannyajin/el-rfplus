@@ -2,7 +2,7 @@ angular
   .module('rfpApp')
   .controller('navCtrl', ['$scope', '$filter', '$location', 
     function($scope, $filter, $location) {
-    var tabs = ['Home', 'Stores', 'Docs'];
+    var tabs = ['Home', 'Stores', 'AddStore', 'Docs'];
     $scope.tabs = tabs;
     $scope.tabElements = [];
 

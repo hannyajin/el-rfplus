@@ -29,14 +29,7 @@ var storeSchema = new Schema({
   _id: { type: ObjectId, auto: true },
 
   name: String, // GNT Pharma Inc
-  address: { // 871 Younge st. Toronto ON CA M4W4H2
-    store: String, // optional store name
-    number: String,
-    street: String,
-    town: String,
-    state: String,
-    zip: String
-  },
+  address: String, // 871 Younge st. Toronto ON CA M4W4H2
   phone: String, // +9872213364
   fax: String, // +9872213648
   email: String,  // gnt.pharma@gmail.com
@@ -280,8 +273,7 @@ router.put('/stores', function (req, res) {
     missingProperties.push('name');
   }
 
-  if (!json.address || !json.address.number || !json.address.street
-      || !json.address.town || !json.address.state || !json.address.zip) {
+  if (!json.address) {
     missingProperties.push('address');
   }
 
@@ -301,7 +293,7 @@ router.put('/stores', function (req, res) {
     missingProperties.push('logo');
   }
 
-  if (!json.gps || !json.gps.lat || !json.gps.lon) {
+  if (!json.gps) {
     missingProperties.push('gps');
   }
 

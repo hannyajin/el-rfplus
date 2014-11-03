@@ -19,6 +19,10 @@ angular
         .state('docs', {
           url: '/docs',
           templateUrl: 'templates/docs.html',
-          controlller: 'docsCtrl'
+        })
+        .state('addstore', {
+          url: '/addstore',
+          templateUrl: 'templates/storeForm.html',
+          controller: 'AddStoreCtrl'
         })
   }])
