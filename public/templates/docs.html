@@ -3,13 +3,51 @@
 <pre>
 
 
-REST Overview:
+REST JSON Overview:
 
 <a href="api/v1/stores">GET /api/v1/stores</a>
 
-GET /api/v1/stores/:id
+Description: Lists all stores.
+Format: [Store] // See Store Format below
 
-Example: <a href="http://localhost:3000/api/v1/stores/54574297e4b02a012c93a6eb" >http://localhost:3000/api/v1/stores/54574297e4b02a012c93a6eb</a>
+
+<a href="">GET /api/v1/stores/:id</a>
+Example: <a href="api/v1/stores/54574297e4b02a012c93a6eb">api/v1/stores/54574297e4b02a012c93a6eb</a>
+
+Description: A single store.
+Format: Store
+  {
+    _id: String - Identifies this store. Used as a reference in ALL orders.
+
+    name: String - name of store
+
+    address: { // example: 871 Younge st. Toronto ON CA M4W4H2
+      store: String - name of store
+      number: String // 871
+      street: String //Younge st.
+      town: String // Toronto
+      state: String // ON CA
+      zip: String // M4W4H2
+    }
+
+    phone: String, // +9872213364
+    fax: String, // +9872213648
+    email: String,  // gnt.pharma@gmail.com
+
+    logo: {
+      href: String // url to logo
+    }
+
+    gps: { // gps coordinate for store
+      lat: String, // 43.674043,
+      lon: String // -79.388187
+    },
+
+    updatedAt: last updated date
+    createdAt: creation date
+  }
+
+
 
 
 <a href="#/docs#callDoctor">POST /api/v1/orders/callDoctor</a>
