@@ -29,8 +29,6 @@ var logoSchema = new Schema({
   store: { type: ObjectId, ref: "Store" },
   data: String,
   buffer: Buffer,
-  buffer_utf8: Buffer,
-  buffer_base64: Buffer,
 
   updatedAt: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now }
@@ -255,8 +253,6 @@ router.get('/logos', function (req, res) {
   });
 });
 
-var Datauri = require('datauri'),
-    dUri = new Datauri();
 
 // GET /logos/:id
 // Get logo Instance Resource
@@ -280,14 +276,13 @@ router.get('/logos/:store', function (req, res) {
       // return res.send(logo.data);
       //return res.render('image', {src: logo.data});
       var data = logo.data;
-      var index = data.indexOf(',');
 
-      var base64Data = data.replace(/^data:image\/jpeg;base64,/, "");
-      console.log(base64Data);
+      var base64Data = data.replace(/^data:image\/(jpg|jpeg|png);base64,/, "");
+      //console.log(base64Data);
 
       var buf = new Buffer(base64Data, 'base64');
 
-      console.log(buf);
+      //console.log(buf);
 
       return res.status(200).set('Content-Type', 'image/x-icon').end(buf, 'binary');
     } else {
@@ -425,14 +420,14 @@ router.put('/stores', function (req, res) {
     // update logo url
     store.logo.href = '/api/v1/logos/' + store._id;
 
+    var base64Data = json.logo.data.replace(/^data:image\/(jpg|jpeg|png);base64,/, "");
+    var buf = new Buffer(base64Data, 'base64');
+
     // upload the logo
     var logo = new models.Logo({
       store: store._id,
       data: json.logo.data,
       buffer: new Buffer(json.logo.data, 'base64'),
-      buffer_utf8: new Buffer(json.logo.data),
-      buffer_base64: new Buffer(json.logo.data, 'base64')
-      //data: new Buffer(json.logo.data, 'base64')
     });
     logo.save(function (err, logo) {
       if (err) {
