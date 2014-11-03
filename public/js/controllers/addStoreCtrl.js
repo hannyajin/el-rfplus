@@ -118,7 +118,6 @@ angular
     // preview the image (first only)
     var file = files[0];
     previewFile(file);
-
   }
 
   scope.image_data = null;
@@ -153,7 +152,6 @@ angular
       reader.onload = function (e) {
         p.src = e.target.result;
         scope.image_data = e.target.result;
-
       }
       reader.readAsDataURL(file);
     }
