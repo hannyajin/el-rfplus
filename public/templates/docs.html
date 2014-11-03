@@ -1,2 +1,157 @@
 <h1>Docs</h1>
-Docs Template
+
+<pre>
+
+
+REST Methods:
+
+GET /api/v1/stores
+GET /api/v1/stores/:id
+
+Example: <a href="http://localhost:3000/api/v1/stores/54574297e4b02a012c93a6eb" >http://localhost:3000/api/v1/stores/54574297e4b02a012c93a6eb</a>
+
+
+<h2>## callDoctor</h2>
+
+<pre>
+POST /api/v1/orders/callDoctor
+
+Request:
+  body:
+  {
+    // User Information
+    user: {
+      name: {
+        first: String,
+        last: String
+      },
+      phone: String,
+      email: String,
+
+      allergies: [String], // optional
+      medicalConditions: [String] // optional
+    },
+
+    // Doctor Information
+    doctor: {
+      name: {
+        first: String,
+        last: String
+      },
+      phone: String, // optional
+      address: String, // optional
+      city: String
+    },
+
+    // Prescriptions
+    prescriptionNames: [String],
+
+    // Pharmacy
+    store: String, // see _id field in /api/v1/stores
+
+    instructions: String // optional
+  }
+
+
+<h2>## sendPrescription</h2>
+<pre>
+POST /api/v1/orders/sendPrescription
+
+Request:
+  body:
+  {
+    // Photo of prescription
+    prescription: {
+      name: String, // optional
+      type: String, // optional
+      data: Buffer, // img data as binary
+      stringData: String // img data as string, optional
+    },
+
+    // User Information
+    user: {
+      name: {
+        first: String,
+        last: String
+      },
+      phone: String,
+      email: String,
+
+      allergies: [String], // optional
+      medicalConditions: [String] // optional
+    },
+
+    // Prescriptions
+    prescriptionNames: [String],
+
+    // Pharmacy
+    store: String, // see _id field in /api/v1/stores
+
+    instructions: String // optional
+  }
+
+
+<h2>## requestMedsCheck</h2>
+<pre>
+POST /api/v1/orders/requestMedsCheck
+
+Request:
+  body:
+  {
+    // User Information
+    user: {
+      name: {
+        first: String,
+        last: String
+      },
+      phone: String,
+      email: String,
+
+      allergies: [String], // optional
+      medicalConditions: [String] // optional
+    },
+
+    // Possible times
+    possibleTimes: [ Date ],
+    // see http://en.wikipedia.org/wiki/ISO_8601
+    // or https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
+
+    // Pharmacy
+    store: String, // see _id field in /api/v1/stores
+
+    instructions: String // optional
+  }
+
+
+<h2>## transferPrescription</h2>
+<pre>
+POST /api/v1/orders/transferPrescription
+
+Request:
+  body:
+  {
+    // User Information
+    user: {
+      name: {
+        first: String,
+        last: String
+      },
+      phone: String,
+      email: String,
+
+      allergies: [String], // optional
+      medicalConditions: [String] // optional
+    },
+
+    // Prescriptions
+    prescriptionNames: [String],
+
+    // Transfer
+    transfer: {
+      from: String // see _id field in /api/v1/stores
+      to: String // see _id field in /api/v1/stores
+    },
+
+    instructions: String // optional
+  }
+</pre>
