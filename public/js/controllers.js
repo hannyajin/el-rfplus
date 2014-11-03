@@ -192,7 +192,7 @@ app.factory('storesFactory', ['$http', function (http) {
     },
 
     list: function (callback) {
-      http.get('/api/stores').success(callback)
+      http.get('/api/v1/stores').success(callback)
     },
     append: function(data) {
       for (var i = 0; i < listeners.length; i++) {

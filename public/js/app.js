@@ -11,10 +11,10 @@ angular
           templateUrl: 'templates/home.html',
           controller: 'homeCtrl'
         })
-        .state('about', {
-          url: '/about',
-          templateUrl: 'templates/about.html',
-          controller: 'aboutCtrl'
+        .state('stores', {
+          url: '/stores',
+          templateUrl: 'templates/storeList.html',
+          controller: 'StoreListCtrl'
         })
         .state('docs', {
           url: '/docs',

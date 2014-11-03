@@ -12,13 +12,13 @@
     </tr>
     <tr ng-repeat="store in stores" ng-class="{lightGreen: $index%2==0}">
       <td>{{ store.name }}</td>
-      <td>{{ store.address }}</td>
+      <td>{{ store.address.number + store.address.street + store.address.zip }}</td>
       <td>{{ store.phone }}</td>
       <td>{{ store.email }}</td>
       <td>{{ store.fax }}</td>
-      <td><img src="{{ store.logo.data }}"></td>
+      <td><img class="pharmacy-logo" ng-src="{{ store.logo.href }}"></td>
 
-      <td>{{ store.location.lon }} , {{ store.location.lat }}</td>
+      <td>{{ store.gps.lat }} , {{ store.gps.lon }}</td>
     </tr>
   </table>
 </div>
