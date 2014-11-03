@@ -98,13 +98,14 @@ th {
 
 // links
 @linkColor: #222;
+@linkHoverColor: #20D7FF;
 @linkUnderlineColor: #666;
 
 a:visited {
   //color: @linkColor;
 }
 
-a:before {
+nav a:before {
   content: "";
   position: absolute;
   width: 100%;
@@ -118,17 +119,21 @@ a:before {
   .transition(all 0.3s ease-in-out 0s);
 }
 
-a {
+nav a {
   position: relative;
   //color: @linkColor;
   text-decoration: none;
 }
 
-a:hover {
+nav a:hover {
   //color: @linkColor;
 }
 
-a:hover:before {
+a:hover {
+  color: @linkHoverColor;
+}
+
+nav a:hover:before {
   visibility: visible;
   .transform(scaleX(.6));
 }
