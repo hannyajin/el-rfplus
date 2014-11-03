@@ -3,15 +3,22 @@
 <pre>
 
 
-REST Methods:
+REST Overview:
 
-GET /api/v1/stores
+<a href="api/v1/stores">GET /api/v1/stores</a>
+
 GET /api/v1/stores/:id
 
 Example: <a href="http://localhost:3000/api/v1/stores/54574297e4b02a012c93a6eb" >http://localhost:3000/api/v1/stores/54574297e4b02a012c93a6eb</a>
 
 
-<h2>## callDoctor</h2>
+<a href="#/docs#callDoctor">POST /api/v1/orders/callDoctor</a>
+<a href="#/docs#sendPrescription">POST /api/v1/orders/sendPrescription</a>
+<a href="#/docs#requestMedsCheck">POST /api/v1/orders/requestMedsCheck</a>
+<a href="#/docs#transferPrescription">POST /api/v1/orders/transferPrescription</a>
+
+
+<h2 id="callDoctor">## callDoctor</h2>
 
 <pre>
 POST /api/v1/orders/callDoctor
@@ -53,7 +60,7 @@ Request:
   }
 
 
-<h2>## sendPrescription</h2>
+<h2 id="sendPrescription">## sendPrescription</h2>
 <pre>
 POST /api/v1/orders/sendPrescription
 
@@ -91,7 +98,7 @@ Request:
   }
 
 
-<h2>## requestMedsCheck</h2>
+<h2 id="requestMedsCheck">## requestMedsCheck</h2>
 <pre>
 POST /api/v1/orders/requestMedsCheck
 
@@ -123,7 +130,7 @@ Request:
   }
 
 
-<h2>## transferPrescription</h2>
+<h2 id="transferPrescription">## transferPrescription</h2>
 <pre>
 POST /api/v1/orders/transferPrescription
 
