@@ -23,6 +23,18 @@ db.once('open', function db_open() {
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
+var logoSchema = new Schema({
+  _id: { type: ObjectId, auto: true },
+
+  store: { type: ObjectId, ref: "Store" },
+  data: String,
+  buffer: Buffer,
+  buffer_utf8: Buffer,
+  buffer_base64: Buffer,
+
+  updatedAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now }
+});
 
 // Store (Pharmacy)
 var storeSchema = new Schema({
@@ -195,6 +207,7 @@ var transferPrescriptionSchema = new Schema({
 /** Create Models out of Schemas
   */
 var models = {
+  Logo: db.model('Logo', logoSchema),
   Store: db.model('Store', storeSchema),
   CallDoctor: db.model('CallDoctor', callDoctorSchema),
   SendPrescription: db.model('SendPrescription', sendPrescriptionSchema),
@@ -218,6 +231,74 @@ function dblog(str) {
 
 /* Stores
 #############################################*/
+
+// GET /logos
+// Get logos Collection Resource
+router.get('/logos', function (req, res) {
+  var params = req.params;
+  dblog('api: GET /logos');
+
+  models.Logo.find({}, function (err, logos) {
+    if (err) {
+      return res.status(500).end();
+    }
+
+    if (logos) {
+      return res.status(200).json(logos).end();
+    } else {
+      return res.status(404).json({
+      'status': '404',
+      'message': "Logo with that id not found.",
+      'developerMessage': "Logo with that id ["+ params.id +"] not found.",
+      }).end();
+    }
+  });
+});
+
+var Datauri = require('datauri'),
+    dUri = new Datauri();
+
+// GET /logos/:id
+// Get logo Instance Resource
+router.get('/logos/:store', function (req, res) {
+  var params = req.params;
+  dblog('api: GET /logos/' + params.store);
+
+  models.Logo.findOne({store: params.store}, function (err, logo) {
+    if (err) {
+      return res.status(500).end();
+    }
+
+    if (logo) {
+      // send logo image data
+      //return res.set('Content-Type', 'image/jpg+png').end(logo.data, 'binary');
+      //console.log("Mime lookup: " + mime.lookup(logo.data + ""));
+      //return res.set('Content-Type', 'image/png').end(logo.data, 'binary');
+      //return res.sendFile('C:\\Users\\Mollie\\workspace\\work\\rfplus\\public\\img\\logo.png');
+      //return res.render('image', {src: }).end();
+
+      // return res.send(logo.data);
+      //return res.render('image', {src: logo.data});
+      var data = logo.data;
+      var index = data.indexOf(',');
+
+      var base64Data = data.replace(/^data:image\/jpeg;base64,/, "");
+      console.log(base64Data);
+
+      var buf = new Buffer(base64Data, 'base64');
+
+      console.log(buf);
+
+      return res.status(200).set('Content-Type', 'image/x-icon').end(buf, 'binary');
+    } else {
+      return res.status(404).json({
+      'status': '404',
+      'message': "Logo with that store id not found.",
+      'developerMessage': "Logo with that store id ["+ params.store +"] not found.",
+      }).end();
+    }
+  });  
+});
 
 // GET /stores
 // Stores Collection Resource
@@ -266,6 +347,8 @@ router.get('/stores/:storeId', function (req, res) {
 // Location: req.get('host') + url (header)
 router.put('/stores', function (req, res) {
   var json = req.body;
+
+  console.log("PUT FILES: " + req.files);
 
   // make sure that all required fields are present
   var missingProperties = [];
@@ -335,10 +418,34 @@ router.put('/stores', function (req, res) {
       store.email = json.email;
       store.fax = json.fax;
       store.gps = json.gps;
-      store.logo = json.logo || json.logo;
 
       store.updatedAt = Date.now();
-    } 
+    }
+
+    // update logo url
+    store.logo.href = '/api/v1/logos/' + store._id;
+
+    // upload the logo
+    var logo = new models.Logo({
+      store: store._id,
+      data: json.logo.data,
+      buffer: new Buffer(json.logo.data, 'base64'),
+      buffer_utf8: new Buffer(json.logo.data),
+      buffer_base64: new Buffer(json.logo.data, 'base64')
+      //data: new Buffer(json.logo.data, 'base64')
+    });
+    logo.save(function (err, logo) {
+      if (err) {
+        dblog("Internal server Error saving logo.");
+      } else {
+        if (logo) {
+          dblog("Logo saved");
+        }
+        else {
+          dblog("Failed to save logo");
+        }
+      }
+    });
 
     var locationHeader = req.get('host') + '/api/v1/:' + store._id;
 

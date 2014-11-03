@@ -6,6 +6,9 @@ angular
   scope.addStore = function() {
     console.log("adding store...");
 
+    console.log("img data length: " + scope.image_data.length);
+    console.log("img data typeof: " + typeof scope.image_data);
+
     with (scope) {
       var data = {
         name: name,
@@ -25,7 +28,6 @@ angular
       }
 
       // reset form fields
-      /*
       name = "";
       address = "";
       phone = "";
@@ -34,8 +36,8 @@ angular
       logo_url = "";
       longitude = "";
       latitude = "";
-      */
     }
+
 
     http.put('/api/v1/stores', data).
       success(function(addedStore, status, headers, config) {
