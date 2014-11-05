@@ -297,7 +297,7 @@ router.get('/logos/:store', function (req, res) {
 
 var stores_version = new Date().getTime();
 router.head('/stores', function (req, res) {
-  res.status(200).set('stores-version', stores_version).set('Connection','close').end();
+  res.status(200).set('Stores-Version', stores_version).set('Connection','close').end();
 });
 
 // GET /stores
