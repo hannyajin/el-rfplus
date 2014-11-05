@@ -11,6 +11,21 @@ Description: Lists all stores.
 Format: [Store] // See Store Format below
 
 
+<a href="api/v1/stores">HEAD /api/v1/stores</a>
+
+Description: Check Headers for 'Stores-Version' number. If different from local version -> requires update.
+
+Sample request: curl -i -X HEAD rfplus.jin.fi/api/v1/stores
+Sample response:
+<pre>
+HTTP/1.1 200 OK
+Date: Wed, 06 Nov 2014
+Set-Cookie: __uid......
+Stores-Version: 1415205524915
+...
+</pre>
+
+
 <a href="">GET /api/v1/stores/:id</a>
 Example: <a href="api/v1/stores/54574297e4b02a012c93a6eb">api/v1/stores/54574297e4b02a012c93a6eb</a>
 
