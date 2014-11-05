@@ -253,7 +253,6 @@ router.get('/logos', function (req, res) {
   });
 });
 
-
 // GET /logos/:id
 // Get logo Instance Resource
 router.get('/logos/:store', function (req, res) {
@@ -293,6 +292,12 @@ router.get('/logos/:store', function (req, res) {
       }).end();
     }
   });  
+});
+
+
+var stores_version = new Date().getTime();
+router.head('/stores', function (req, res) {
+  res.status(200).set('stores-version', stores_version).set('Connection','close').end();
 });
 
 // GET /stores
