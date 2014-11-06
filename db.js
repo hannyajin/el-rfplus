@@ -34,6 +34,15 @@ var logoSchema = new Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+var prescriptionSchema = new Schema({
+  _id: { type: ObjectId, auto: true },
+
+  // multer file
+  file: Schema.Types.Mixed,
+
+  createdAt: { type: Date, default: Date.now }
+});
+
 // Store (Pharmacy)
 var storeSchema = new Schema({
   _id: { type: ObjectId, auto: true },
@@ -45,7 +54,7 @@ var storeSchema = new Schema({
   email: String,  // gnt.pharma@gmail.com
 
   logo: {
-    href: String // url to logo
+    href: String // url to logo PLUS query part if updated
   },
 
   // gps coordinates (DDD) of store
@@ -112,10 +121,8 @@ var sendPrescriptionSchema = new Schema({
 
   // Photo of prescription
   prescription: {
-    name: String, // optional
-    type: String,
-    data: Buffer, // img data as binary
-    stringData: String // img data as string
+    // unique id to reference the uploaded image prescripton
+    id: String
   },
 
   // User Information
@@ -206,6 +213,7 @@ var transferPrescriptionSchema = new Schema({
   */
 var models = {
   Logo: db.model('Logo', logoSchema),
+  Prescription: db.model('Prescription', prescriptionSchema),
   Store: db.model('Store', storeSchema),
   CallDoctor: db.model('CallDoctor', callDoctorSchema),
   SendPrescription: db.model('SendPrescription', sendPrescriptionSchema),
@@ -609,24 +617,66 @@ router.post('/orders/sendPrescription', function (req, res) {
     }).end();
   }
 
-  // TODO simulate work for now
-  setTimeout(function() {
-    return res.status(202).json({
-      'status': '202',
-      'code': '20200',
-      'message': "Order accepted but has not and may not be processed. This API is still\
-       under development.",
-      'developerMessage': "Order accepted but has not and may not be processed.\
-       This API is still under development.",
-      'moreinfo': req.get('host') + '/docs/errors/20200'
-    }).end();
-  }, 1000);
+  models.Prescription.findOne({_id: json.prescription.id}, function (err, prescription) {
+    if (err) {
+      return res.status(500).json({
+        'status': '500',
+        'message': 'Internal Server Error',
+        'developerMessage': 'Internal Server Error when looking up Prescription'
+      }).end();
+    }
 
-  // Prescription Photo
-  // User Info
-  // PrescriptionNames
-  // To Store
-  // Instructions
+    if (prescription) { // prescription image found.
+      // confirm valid store
+      models.Store.findOne({_id: json.store}, function (err, store) {
+        if (err) {
+          dblog('api db err: POST /orders/callDoctor, ' + store);
+          return res.status(500).end();
+        }
+
+        if (!store) { // no store found
+          return res.status(409).json({
+            'status': '409',
+            'code': '40906',
+            'property': 'store', 
+            'message': "sendPrescription Order can't be made because a store with that id doesn't exist.",
+            'developerMessage': "sendPrescription Order can't be made because a store with id: ["+ json.store +"]\
+             doesn't exist.",
+            'moreinfo': req.get('host') + '/docs/errors/40906'
+          }).end();
+        } else {
+          // Order information is valid.
+          var order = new models.SendPrescription(json);
+          order.save(function (err, order) {
+            if (err) {
+              dblog('api db err: POST /orders/callDoctor');
+              return res.status(500).end();
+            }
+
+            // TODO Process CallDoctor Order (send fax/email etc)
+            // Simulate Processing Time for now during development
+            // I.e, don't actually send faxes yet.
+            setTimeout(function() {
+              dblog('api: POST /orders/callDoctor OK');
+              var href = req.get('host') + '/orders/' + order._id;
+              return res.status(201).set('Location', href).json({
+                'status': '201',
+                'message': 'SendPrescription order successfully created.',
+                'href': href
+              }).end();
+            }, 1000);
+          });
+        }
+      });
+
+    } else { // prescription image not found
+      return res.status(400).json({
+        'status': '400',
+        'message': 'A Prescription Image with that id was not found.',
+        'developerMessage': 'A Prescription Image with that id was not found.'
+      }).end();
+    }
+  });
 });
 
 // POST /orders/requestMedsCheck
@@ -742,10 +792,54 @@ router.get('/orders/:type/:id', function (req, res) {
 });
 
 
+
+/* Uploads Router
+#############################################*/
+var uploads = express.Router();
+
+uploads.post('/prescriptions', function (req, res) {
+  dblog('api: POST uploads/prescriptions');
+
+  if (req.files.prescription) {
+    dblog('file: ' + JSON.stringify(req.files.prescription) );
+
+    dblog('body: ' + JSON.stringify(req.body));
+
+    // save the image to the database
+    var p = new models.Prescription({
+      file: req.files.prescription
+    });
+    p.save(function (err, prescription) {
+      if (err) {
+        return res.status(500).json({
+          message: 'Database Error: Failed to save Prescription.',
+          developerMessage: 'Database Error: Failed to save Prescription.'
+        }).end();
+      }
+
+      return res.status(200).json({
+        id: prescription._id,
+        message: 'Prescription uploaded successfully!'
+      }).end();
+    });
+
+  } else {
+    res.status(400).json({
+      message: 'Invalid form data.',
+      developerMessage: 'No form field named [prescription] with data was found.'
+    }).end();
+  }
+
+});
+
+
 /* Expose outside */
 module.exports = {
   type: 'Mongo',
-  router: router,
+  router: {
+    api: router,
+    uploads: uploads
+  },
   models: models,
   connection: db
 };

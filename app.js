@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var multer = require('multer');
 
 var app = express();
 
@@ -23,7 +23,18 @@ app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/v1/', db.router);
+app.use('/api/v1/', db.router.api);
+
+// multipart/form-data
+app.use('/uploads', multer({
+    dest: './uploads',
+    limits: {
+        fieldNameSize: 100,
+        files: 1,
+        fields: 1
+    }
+}));
+app.use('/uploads', db.router.uploads);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
