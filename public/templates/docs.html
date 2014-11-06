@@ -5,6 +5,13 @@
 
 REST JSON Overview:
 
+<a href="#/docs#callDoctor">POST /api/v1/orders/callDoctor</a>
+<a href="#/docs#sendPrescription">POST /api/v1/orders/sendPrescription</a>
+<a href="#/docs#requestMedsCheck">POST /api/v1/orders/requestMedsCheck</a>
+<a href="#/docs#transferPrescription">POST /api/v1/orders/transferPrescription</a>
+
+<a href="#/docs#uploadPrescription">POST /uploads/prescriptions</a>
+
 <a href="api/v1/stores">GET /api/v1/stores</a>
 
 Description: Lists all stores.
@@ -56,12 +63,30 @@ Format: Store
   }
 
 
+<h2 id="uploadPrescription">## Uploads Prescription Image</h2>
+POST /uploads/prescriptions
+
+Current Max Size: 5 MB
+
+Request Example: curl -v -include --form prescription=@image.jpg rfplus.jin.fi/uploads/prescriptions
+
+Response Samples:
+200 OK
+{
+  id: prescription._id, // use this to reference the prescription image in sendPrescription
+  message: 'Prescription uploaded successfully!'
+}
+
+400 Bad Request
+{
+  message: 'Invalid form data.',
+  developerMessage: 'No form field named [prescription] with data was found.'
+}
+
+413 Request Entity Too Large
+- Size larger than 5MB
 
 
-<a href="#/docs#callDoctor">POST /api/v1/orders/callDoctor</a>
-<a href="#/docs#sendPrescription">POST /api/v1/orders/sendPrescription</a>
-<a href="#/docs#requestMedsCheck">POST /api/v1/orders/requestMedsCheck</a>
-<a href="#/docs#transferPrescription">POST /api/v1/orders/transferPrescription</a>
 
 
 <h2 id="callDoctor">## callDoctor</h2>
@@ -115,10 +140,7 @@ Request:
   {
     // Photo of prescription
     prescription: {
-      name: String, // optional
-      type: String, // optional
-      data: Buffer, // img data as binary
-      stringData: String // img data as string, optional
+      id: String, (Received by uploading an image succesfully to /uploads/prescriptions)
     },
 
     // User Information
