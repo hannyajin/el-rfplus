@@ -620,7 +620,7 @@ router.post('/orders/sendPrescription', function (req, res) {
   // check that all required data is present
   if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
       || !json.prescriptionNames || !json.store) {
-    return res.status.(400).json({
+    return res.status(400).json({
       'status': '400',
       'property': 'Request Body (Json)',
       'message': 'Required data missing from json.',
@@ -711,7 +711,7 @@ router.post('/orders/refillPrescription', function (req, res) {
   // check that all required data is present
   if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
       || !json.rx || !json.store) {
-    return res.status.(400).json({
+    return res.status(400).json({
       'status': '400',
       'property': 'Request Body (Json)',
       'message': 'Required data missing from json.',
@@ -782,7 +782,7 @@ router.post('/orders/requestMedsCheck', function (req, res) {
   // check that all required data is present
   if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
       || !json.possibleTimes || !json.store) {
-    return res.status.(400).json({
+    return res.status(400).json({
       'status': '400',
       'property': 'Request Body (Json)',
       'message': 'Required data missing from json.',
@@ -830,7 +830,7 @@ router.post('/orders/transferPrescription', function (req, res) {
   if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
       || !json.prescriptionNames || !json.transfer || !json.transfer.from || !json.transfer.to
       || !json.store) {
-    return res.status.(400).json({
+    return res.status(400).json({
       'status': '400',
       'property': 'Request Body (Json)',
       'message': 'Required data missing from json.',
