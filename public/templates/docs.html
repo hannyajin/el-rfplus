@@ -7,6 +7,7 @@ REST JSON Overview:
 
 <a href="#/docs#callDoctor">POST /api/v1/orders/callDoctor</a>
 <a href="#/docs#sendPrescription">POST /api/v1/orders/sendPrescription</a>
+<a href="#/docs#refillPrescription">POST /api/v1/orders/refillPrescription</a>
 <a href="#/docs#requestMedsCheck">POST /api/v1/orders/requestMedsCheck</a>
 <a href="#/docs#transferPrescription">POST /api/v1/orders/transferPrescription</a>
 
@@ -158,6 +159,35 @@ Request:
 
     // Prescriptions
     prescriptionNames: [String],
+
+    // Pharmacy
+    store: String, // see _id field in /api/v1/stores
+
+    instructions: String // optional
+  }
+
+<h2 id="refillPrescription">## refillPrescription</h2>
+<pre>
+POST /api/v1/orders/refillPrescription
+
+Request:
+  body:
+  {
+    // User Information
+    user: {
+      name: {
+        first: String,
+        last: String
+      },
+      phone: String,
+      email: String,
+
+      allergies: [String], // optional
+      medicalConditions: [String] // optional
+    },
+
+    // RX Names / RX Numbers
+    rx: [String],
 
     // Pharmacy
     store: String, // see _id field in /api/v1/stores

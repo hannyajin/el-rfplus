@@ -617,6 +617,17 @@ router.post('/orders/sendPrescription', function (req, res) {
     }).end();
   }
 
+  // check that all required data is present
+  if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
+      || !json.prescriptionNames || !json.store) {
+    return res.status.(400).json({
+      'status': '400',
+      'property': 'Request Body (Json)',
+      'message': 'Required data missing from json.',
+      'developerMessage': 'Required data missing from json.'
+    }).end();
+  }
+
   models.Prescription.findOne({_id: json.prescription.id}, function (err, prescription) {
     if (err) {
       return res.status(500).json({
@@ -630,7 +641,7 @@ router.post('/orders/sendPrescription', function (req, res) {
       // confirm valid store
       models.Store.findOne({_id: json.store}, function (err, store) {
         if (err) {
-          dblog('api db err: POST /orders/callDoctor, ' + store);
+          dblog('api db err: POST /orders/sendPrescription, ' + store);
           return res.status(500).end();
         }
 
@@ -649,7 +660,7 @@ router.post('/orders/sendPrescription', function (req, res) {
           var order = new models.SendPrescription(json);
           order.save(function (err, order) {
             if (err) {
-              dblog('api db err: POST /orders/callDoctor');
+              dblog('api db err: POST /orders/sendPrescription');
               return res.status(500).end();
             }
 
@@ -657,7 +668,7 @@ router.post('/orders/sendPrescription', function (req, res) {
             // Simulate Processing Time for now during development
             // I.e, don't actually send faxes yet.
             setTimeout(function() {
-              dblog('api: POST /orders/callDoctor OK');
+              dblog('api: POST /orders/sendPrescription OK');
               var href = req.get('host') + '/orders/' + order._id;
               return res.status(201).set('Location', href).json({
                 'status': '201',
@@ -679,6 +690,78 @@ router.post('/orders/sendPrescription', function (req, res) {
   });
 });
 
+
+// POST /orders/refillPrescription
+router.post('/orders/refillPrescription', function (req, res) {
+  var json = req.body;
+
+  if (!json) {
+    // 409 Conflict
+    return res.status(400).json({
+      'status': '400',
+      'code': '40002',
+      'property': 'Request Body', 
+      'message': "Order can't be made because Request Body is missing.",
+      'developerMessage': "Order (sendPrescription) can't be made because Request Body is\
+       missing from the POST Request.",
+      'moreinfo': req.get('host') + '/docs/errors/40002'
+    }).end();
+  }
+
+  // check that all required data is present
+  if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
+      || !json.rx || !json.store) {
+    return res.status.(400).json({
+      'status': '400',
+      'property': 'Request Body (Json)',
+      'message': 'Required data missing from json.',
+      'developerMessage': 'Required data missing from json.'
+    }).end();
+  }
+
+  // confirm valid store
+  models.Store.findOne({_id: json.store}, function (err, store) {
+    if (err) {
+      dblog('api db err: POST /orders/refillPrescription, ' + store);
+      return res.status(500).end();
+    }
+
+    if (!store) { // no store found
+      return res.status(409).json({
+        'status': '409',
+        'code': '40906',
+        'property': 'store', 
+        'message': "sendPrescription Order can't be made because a store with that id doesn't exist.",
+        'developerMessage': "sendPrescription Order can't be made because a store with id: ["+ json.store +"]\
+         doesn't exist.",
+        'moreinfo': req.get('host') + '/docs/errors/40906'
+      }).end();
+    } else {
+      // Order information is valid.
+      var order = new models.SendPrescription(json);
+      order.save(function (err, order) {
+        if (err) {
+          dblog('api db err: POST /orders/refillPrescription');
+          return res.status(500).end();
+        }
+
+        // TODO Process CallDoctor Order (send fax/email etc)
+        // Simulate Processing Time for now during development
+        // I.e, don't actually send faxes yet.
+        setTimeout(function() {
+          dblog('api: POST /orders/refillPrescription OK');
+          var href = req.get('host') + '/orders/' + order._id;
+          return res.status(201).set('Location', href).json({
+            'status': '201',
+            'message': 'SendPrescription order successfully created.',
+            'href': href
+          }).end();
+        }, 1000);
+      });
+    }
+  });
+});
+
 // POST /orders/requestMedsCheck
 router.post('/orders/requestMedsCheck', function (req, res) {
   var json = req.body;
@@ -693,6 +776,17 @@ router.post('/orders/requestMedsCheck', function (req, res) {
       'developerMessage': "Order (requestMedsCheck) can't be made because Request Body is\
        missing from the POST Request.",
       'moreinfo': req.get('host') + '/docs/errors/40003'
+    }).end();
+  }
+
+  // check that all required data is present
+  if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
+      || !json.possibleTimes || !json.store) {
+    return res.status.(400).json({
+      'status': '400',
+      'property': 'Request Body (Json)',
+      'message': 'Required data missing from json.',
+      'developerMessage': 'Required data missing from json.'
     }).end();
   }
 
@@ -729,6 +823,18 @@ router.post('/orders/transferPrescription', function (req, res) {
       'developerMessage': "Order (transferPrescription) can't be made because Request Body is\
        missing from the POST Request.",
       'moreinfo': req.get('host') + '/docs/errors/40004'
+    }).end();
+  }
+
+  // check that all required data is present
+  if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
+      || !json.prescriptionNames || !json.transfer || !json.transfer.from || !json.transfer.to
+      || !json.store) {
+    return res.status.(400).json({
+      'status': '400',
+      'property': 'Request Body (Json)',
+      'message': 'Required data missing from json.',
+      'developerMessage': 'Required data missing from json.'
     }).end();
   }
 
