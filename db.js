@@ -10,6 +10,12 @@ var db = mongoose.createConnection(auth.mongo.url, mongo_opts);
 var express = require('express');
 var router = express.Router();
 
+var stores_version = new Date().getTime();
+
+function storesUpdated() {
+  stores_version = new Date().getTime();
+}
+
 db.on('error', console.log.bind(console, 'db connection error:'));
 db.once('open', function db_open() {
   console.log("Connected to DataBase");
@@ -303,7 +309,6 @@ router.get('/logos/:store', function (req, res) {
 });
 
 
-var stores_version = new Date().getTime();
 router.head('/stores', function (req, res) {
   res.status(200).set('Stores-Version', stores_version).set('Connection','close').end();
 });
@@ -466,6 +471,7 @@ router.put('/stores', function (req, res) {
 
       // store saved successfully
       dblog('"api db: PUT /stores ' + status);
+      storesUpdated();
       return res.status(status).set('Location', locationHeader).json(store).end();
     }); // store save
   });
