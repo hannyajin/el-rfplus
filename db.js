@@ -709,7 +709,7 @@ router.post('/orders/refillPrescription', function (req, res) {
   }
 
   // check that all required data is present
-  if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
+  if (!json.user || !json.user.name || !json.user.phone || !json.user.email
       || !json.rx || !json.store) {
     return res.status(400).json({
       'status': '400',
@@ -780,7 +780,7 @@ router.post('/orders/requestMedsCheck', function (req, res) {
   }
 
   // check that all required data is present
-  if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
+  if (!json.user || !json.user.name || !json.user.phone || !json.user.email
       || !json.possibleTimes || !json.store) {
     return res.status(400).json({
       'status': '400',
@@ -827,7 +827,7 @@ router.post('/orders/transferPrescription', function (req, res) {
   }
 
   // check that all required data is present
-  if (!json.prescription || !json.user || !json.user.name || !json.user.phone || !json.user.email
+  if (!json.user || !json.user.name || !json.user.phone || !json.user.email
       || !json.prescriptionNames || !json.transfer || !json.transfer.from || !json.transfer.to
       || !json.store) {
     return res.status(400).json({
